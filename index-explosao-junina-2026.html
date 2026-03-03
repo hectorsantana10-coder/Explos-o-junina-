@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explosão Junina 2026</title>
+
+<style>
+body{margin:0;font-family:Arial;background:#fff8e8}
+header{background:linear-gradient(90deg,#ff7a18,#ffd23a);padding:15px;text-align:center;color:white}
+nav{display:flex;justify-content:center;gap:10px;margin:15px 0;flex-wrap:wrap}
+button{padding:10px 16px;border:none;border-radius:20px;cursor:pointer;font-weight:bold}
+.btn1{background:#0b5bd3;color:white}
+.btn2{background:#ff7a18;color:white}
+.section{display:none;max-width:1000px;margin:auto;padding:20px}
+.section.active{display:block}
+.card{background:white;padding:20px;border-radius:18px;box-shadow:0 5px 20px rgba(0,0,0,0.08);margin-bottom:20px}
+input,select,textarea{width:100%;padding:10px;margin:5px 0 15px;border-radius:12px;border:1px solid #ccc}
+table{width:100%;border-collapse:collapse}
+th,td{padding:8px;border-bottom:1px solid #ddd;text-align:left}
+.comprovante{background:#f2f2f2;padding:15px;border-radius:12px;margin-top:15px}
+.login-box{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:none;justify-content:center;align-items:center}
+.login-content{background:white;padding:20px;border-radius:15px;width:300px}
+</style>
+</head>
+<body>
+
+<header>
+<h2 id="mensagemTopo"></h2>
+</header>
+
+<nav>
+<button class="btn1" onclick="showSection('inicio')">Início</button>
+<button class="btn2" onclick="showSection('inscricao')">Inscrição</button>
+<button class="btn1" onclick="showSection('avisos')">Avisos</button>
+<button class="btn2" onclick="showSection('ensaios')">Ensaios</button>
+<button onclick="openLogin()">Diretoria</button>
+</nav>
+
+<div id="inicio" class="section active">
+<div class="card">
+<h3>Explosão Junina 2026 🔥🌽</h3>
+<p id="avisoPublico">Nenhum aviso ainda.</p>
+<p id="statusPublico">Status do ensaio: Não definido</p>
+<p id="horarioPublico">Horário: -</p>
+</div>
+</div>
+
+<div id="inscricao" class="section">
+<div class="card">
+<h3>Inscrição</h3>
+<form id="form">
+<input required id="nome" placeholder="Nome completo">
+<input required id="idade" type="number" placeholder="Idade">
+<input required id="telefone" placeholder="Telefone">
+<input required id="escola" placeholder="Escola">
+<select required id="funcao">
+<option value="">Selecione função</option>
+<option>Dançarino</option>
+<option>Produção</option>
+</select>
+<button class="btn2" type="submit">Enviar inscrição</button>
+</form>
+<div id="comprovante" class="comprovante" style="display:none;"></div>
+</div>
+</div>
+
+<div id="avisos" class="section">
+<div class="card">
+<h3>Avisos Oficiais</h3>
+<p id="avisoPublico2">Nenhum aviso ainda.</p>
+</div>
+</div>
+
+<div id="ensaios" class="section">
+<div class="card">
+<h3>Informações de Ensaio</h3>
+<p id="statusPublico2">Status: Não definido</p>
+<p id="horarioPublico2">Horário: -</p>
+</div>
+</div>
+
+<div id="diretoria" class="section">
+<div class="card">
+<h3>Painel da Diretoria</h3>
+
+<label>Vai ter ensaio?</label>
+<select id="ensaioSelect">
+<option value="Sim">Sim</option>
+<option value="Não">Não</option>
+</select>
+
+<label>Horário do ensaio</label>
+<input id="horarioInput" placeholder="Ex: Terça e quinta 18:30">
+
+<label>Aviso oficial</label>
+<textarea id="avisoInput"></textarea>
+
+<button class="btn1" onclick="salvarConfig()">Salvar</button>
+
+<hr>
+
+<p><b>Total Dançarinos:</b> <span id="totalD">0</span></p>
+<p><b>Total Produção:</b> <span id="totalP">0</span></p>
+<p><b>Total Geral:</b> <span id="totalG">0</span></p>
+</div>
+
+<div class="card">
+<h3>Lista completa</h3>
+<table>
+<thead>
+<tr><th>Nº</th><th>Nome</th><th>Função</th></tr>
+</thead>
+<tbody id="lista"></tbody>
+</table>
+</div>
+</div>
+
+<div class="login-box" id="loginBox">
+<div class="login-content">
+<h3>Login Diretoria</h3>
+<input id="user" placeholder="Usuário">
+<input type="password" id="pass" placeholder="Senha">
+<button onclick="login()">Entrar</button>
+</div>
+</div>
+
+<script>
+const MSG1 = "faça  já sua inscrição para a explosão junina 2026, não fique de fora dessa temporada extraordinária🔥🌽";
+const MSG2 = "Seja bem vindo ao site oficial da explosão junina 🌽🔥";
+
+function atualizarMensagem(){
+let hoje=new Date();
+let fim=new Date(hoje.getFullYear(),2,9,23,59,59);
+mensagemTopo.innerText=(hoje<=fim)?MSG1:MSG2;
+}
+atualizarMensagem();
+
+function showSection(id){
+document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+}
+
+function openLogin(){loginBox.style.display="flex";}
+
+function login(){
+if(user.value==="hectorsantana" && pass.value==="diretoria2026"){
+loginBox.style.display="none";
+showSection("diretoria");
+carregarDados();
+}else{alert("Senha incorreta");}
+}
+
+function gerarNumero(){
+let n=localStorage.getItem("contador");
+n=n?parseInt(n)+1:1;
+localStorage.setItem("contador",n);
+return n;
+}
+
+form.addEventListener("submit",function(e){
+e.preventDefault();
+let listaIns=JSON.parse(localStorage.getItem("inscricoes")||"[]");
+let numero=gerarNumero();
+let nova={numero:nome.value?numero:null,nome:nome.value,funcao:funcao.value};
+listaIns.push(nova);
+localStorage.setItem("inscricoes",JSON.stringify(listaIns));
+
+comprovante.style.display="block";
+comprovante.innerHTML=`
+<h4>Comprovante de Inscrição</h4>
+<p><b>Número:</b> ${numero}</p>
+<p><b>Nome:</b> ${nome.value}</p>
+<p><b>Função:</b> ${funcao.value}</p>
+<p>Guarde este número.</p>`;
+
+let msg=`Olá, meu nome é ${nome.value}. Fiz minha inscrição para a Explosão Junina 2026 🔥🌽
+
+${funcao.value} inscrição ${numero}`;
+
+window.open(`https://wa.me/5577999996537?text=${encodeURIComponent(msg)}`,"_blank");
+
+this.reset();
+});
+
+function salvarConfig(){
+let ensaio=ensaioSelect.value;
+let horario=horarioInput.value;
+let aviso=avisoInput.value;
+
+localStorage.setItem("config",JSON.stringify({ensaio,horario,aviso}));
+aplicarConfig();
+}
+
+function aplicarConfig(){
+let cfg=JSON.parse(localStorage.getItem("config")||"{}");
+if(cfg.ensaio){
+statusPublico.innerText="Status do ensaio: "+cfg.ensaio;
+statusPublico2.innerText="Status: "+cfg.ensaio;
+}
+if(cfg.horario){
+horarioPublico.innerText="Horário: "+cfg.horario;
+horarioPublico2.innerText="Horário: "+cfg.horario;
+}
+if(cfg.aviso){
+avisoPublico.innerText=cfg.aviso;
+avisoPublico2.innerText=cfg.aviso;
+}
+}
+
+function carregarDados(){
+let listaIns=JSON.parse(localStorage.getItem("inscricoes")||"[]");
+lista.innerHTML="";
+let d=0,p=0;
+
+listaIns.forEach(i=>{
+lista.innerHTML+=`<tr><td>${i.numero}</td><td>${i.nome}</td><td>${i.funcao}</td></tr>`;
+if(i.funcao==="Dançarino") d++;
+if(i.funcao==="Produção") p++;
+});
+
+totalD.innerText=d;
+totalP.innerText=p;
+totalG.innerText=listaIns.length;
+}
+
+aplicarConfig();
+</script>
+
+</body>
+</html>
