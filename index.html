@@ -19,12 +19,12 @@
   input,select,textarea{width:100%;padding:10px;margin:5px 0 15px;border-radius:12px;border:1px solid #ccc}
   table{width:100%;border-collapse:collapse}
   th,td{padding:8px;border-bottom:1px solid #ddd;text-align:left;vertical-align:top}
-  .pill{display:inline-block;padding:4px 10px;border-radius:999px;background:#f2f2f2;font-size:12px}
   .row{display:flex;gap:12px;flex-wrap:wrap}
-  .row > div{flex:1;min-width:220px}
+  .row > div{flex:1;min-width:240px}
+  .pill{display:inline-block;padding:4px 10px;border-radius:999px;background:#f2f2f2;font-size:12px}
+  .muted{opacity:.75}
   .login-box{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:none;justify-content:center;align-items:center;z-index:999}
   .login-content{background:white;padding:22px;border-radius:20px;width:92%;max-width:420px}
-  .muted{opacity:.75}
 </style>
 </head>
 <body>
@@ -36,7 +36,7 @@
 
 <nav>
   <button class="btn1" onclick="showSection('inicio')">Início</button>
-  <button id="btnInscricao" class="btn2" onclick="showSection('inscricao')">Inscrição</button>
+  <button class="btn2" onclick="showSection('inscricao')" id="btnInscricaoNav">Inscrição</button>
   <button class="btn1" onclick="showSection('avisos')">Avisos</button>
   <button class="btn2" onclick="showSection('ensaios')">Ensaios</button>
   <button onclick="openLogin()">Diretoria</button>
@@ -45,16 +45,15 @@
 <div id="inicio" class="section active">
   <div class="card">
     <h3>Explosão Junina 2026 🔥🌽</h3>
-    <p class="muted"></p>
     <div class="row">
-      <div class="card">
-        <div class="pill">Status do Ensaio</div>
-        <p id="statusPublico" style="margin-top:10px;">Status: Não definido</p>
-        <p id="horarioPublico">Horário: -</p>
-      </div>
       <div class="card">
         <div class="pill">Aviso Oficial</div>
         <p id="avisoPublico" style="margin-top:10px;">Nenhum aviso ainda.</p>
+      </div>
+      <div class="card">
+        <div class="pill">Ensaio</div>
+        <p id="statusPublico" style="margin-top:10px;">Status: Não definido</p>
+        <p id="horarioPublico">Horário: -</p>
       </div>
     </div>
   </div>
@@ -97,11 +96,11 @@
 <div id="diretoria" class="section">
   <div class="card">
     <h3>Painel da Diretoria</h3>
-    <p class="muted">Aqui você altera Avisos/Ensaios e vê todas as inscrições (salvas online).</p>
+    <p class="muted">Edite avisos e ensaios + veja todas as inscrições ao vivo.</p>
 
     <div class="row">
       <div>
-        <label>Status do ensaio</label>
+        <label>Vai ter ensaio?</label>
         <select id="ensaioSelect">
           <option value="Sim">Sim</option>
           <option value="Não">Não</option>
@@ -118,18 +117,15 @@
       </div>
 
       <div>
-        <div class="pill">Exportar</div>
+        <div class="pill">Download</div>
         <p class="muted" style="margin-top:10px;">Baixar lista por categoria (Produção / Dançarino).</p>
         <button class="btn2" type="button" onclick="baixarCategorias()">Baixar TXT</button>
-
-        <div class="pill" style="margin-top:16px;">Dica</div>
-        <p class="muted" style="margin-top:10px;">Quando alguém se inscreve, você recebe uma mensagem no WhatsApp e a inscrição já fica salva online automaticamente.</p>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <h3>Inscrições (tempo real)</h3>
+    <h3>Inscrições (ao vivo)</h3>
     <table>
       <thead>
         <tr><th>Nome</th><th>Função</th><th>Idade</th><th>Telefone</th><th>Escola</th><th>Data</th></tr>
@@ -142,7 +138,6 @@
 <div class="login-box" id="loginBox">
   <div class="login-content">
     <h3>Login da Diretoria</h3>
-    <p class="muted">Senha local (rápida): usuário <b>hectorsantana</b> e senha <b>diretoria2026</b>.</p>
     <input id="loginUser" placeholder="Usuário" />
     <input type="password" id="loginPass" placeholder="Senha" />
     <button class="btn1" onclick="loginLocal()">Entrar</button>
@@ -155,9 +150,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
 
 <script>
-/* =========================================================
-   1) COLE AQUI O SEU firebaseConfig (do Firebase Console)
-   ========================================================= */
+/* ====== COLE AQUI O SEU firebaseConfig (do Firebase Console) ====== */
 const firebaseConfig = {
   // apiKey: "...",
   // authDomain: "...",
@@ -167,62 +160,52 @@ const firebaseConfig = {
   // appId: "..."
 };
 
-let app = null;
 let db = null;
 try {
-  app = firebase.initializeApp(firebaseConfig);
+  firebase.initializeApp(firebaseConfig);
   db = firebase.firestore();
 } catch (e) {
   console.warn("Firebase não inicializado (cole o firebaseConfig).", e);
 }
 
-/* =========================================================
-   2) Mensagem temporária até dia 9 / depois dia 10
-   ========================================================= */
+/* ====== Mensagem do topo ====== */
 const MSG_ATE_DIA9 = "faça  já sua inscrição para a explosão junina 2026, não fique de fora dessa temporada extraordinária🔥🌽";
 const MSG_DIA10 = "Seja bem vindo ao site oficial da explosão junina 🌽🔥";
 
-function atualizarMensagemTopo() {
+function atualizarMensagemTopo(){
   const hoje = new Date();
-  const fimDia9 = new Date(hoje.getFullYear(), 2, 9, 23, 59, 59); // março = 2
+  const fimDia9 = new Date(hoje.getFullYear(), 2, 9, 23, 59, 59);
   document.getElementById("mensagemTopo").innerText = (hoje <= fimDia9) ? MSG_ATE_DIA9 : MSG_DIA10;
 }
 
-/* =========================================================
-   3) Navegação
-   ========================================================= */
-function showSection(id) {
+/* ====== Navegação ====== */
+function showSection(id){
   document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 function openLogin(){ document.getElementById("loginBox").style.display="flex"; }
 function closeLogin(){ document.getElementById("loginBox").style.display="none"; }
 
-/* =========================================================
-   4) Login local (rápido). Segurança real: Firebase Auth.
-   ========================================================= */
+/* ====== Login local ====== */
 const LOCAL_USER = "hectorsantana";
 const LOCAL_PASS = "diretoria2026";
 
-function loginLocal() {
+function loginLocal(){
   const u = document.getElementById("loginUser").value.trim();
   const p = document.getElementById("loginPass").value.trim();
-  if (u === LOCAL_USER && p === LOCAL_PASS) {
+  if(u === LOCAL_USER && p === LOCAL_PASS){
     closeLogin();
     showSection("diretoria");
-    iniciarRealtime();
+    iniciarRealtimeInscricoes();
     carregarConfigDiretoria();
   } else {
     alert("Usuário ou senha incorretos.");
   }
 }
 
-/* =========================================================
-   5) Firestore: Config público (avisos/ensaios)
-   - doc: config/public
-   ========================================================= */
-async function salvarConfig() {
-  if (!db) return alert("Firebase não configurado. Cole o firebaseConfig e publique.");
+/* ====== Config público ====== */
+async function salvarConfig(){
+  if(!db) return alert("Firebase não configurado. Cole o firebaseConfig e publique.");
   const ensaio = document.getElementById("ensaioSelect").value;
   const horario = document.getElementById("horarioInput").value;
   const aviso = document.getElementById("avisoInput").value;
@@ -232,30 +215,11 @@ async function salvarConfig() {
     ensaio, horario, aviso,
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   }, { merge: true });
-
   document.getElementById("msgConfig").innerText = "Salvo ✅";
 }
 
-function escutarConfigPublico() {
-  if (!db) return;
-  db.collection("config").doc("public").onSnapshot((doc) => {
-    const data = doc.data() || {};
-    const ensaio = data.ensaio || "Não definido";
-    const horario = data.horario || "-";
-    const aviso = data.aviso || "Nenhum aviso ainda.";
-
-    document.getElementById("statusPublico").innerText = "Status: " + ensaio;
-    document.getElementById("horarioPublico").innerText = "Horário: " + horario;
-    document.getElementById("avisoPublico").innerText = aviso;
-
-    document.getElementById("statusPublico2").innerText = "Status: " + ensaio;
-    document.getElementById("horarioPublico2").innerText = "Horário: " + horario;
-    document.getElementById("avisoPublico2").innerText = aviso;
-  });
-}
-
-async function carregarConfigDiretoria() {
-  if (!db) return;
+async function carregarConfigDiretoria(){
+  if(!db) return;
   const doc = await db.collection("config").doc("public").get();
   const data = doc.data() || {};
   document.getElementById("ensaioSelect").value = data.ensaio || "Não";
@@ -263,15 +227,30 @@ async function carregarConfigDiretoria() {
   document.getElementById("avisoInput").value = data.aviso || "";
 }
 
-/* =========================================================
-   6) Firestore: Inscrições (online)
-   - coleção: inscricoes
-   ========================================================= */
-const MEU_NUMERO_WA = "5577999996537"; // seu número (sem +)
+function escutarConfigPublico(){
+  if(!db) return;
+  db.collection("config").doc("public").onSnapshot((doc)=>{
+    const data = doc.data() || {};
+    const ensaio = data.ensaio || "Não definido";
+    const horario = data.horario || "-";
+    const aviso = data.aviso || "Nenhum aviso ainda.";
 
-async function enviarInscricao(e) {
+    document.getElementById("avisoPublico").innerText = aviso;
+    document.getElementById("avisoPublico2").innerText = aviso;
+
+    document.getElementById("statusPublico").innerText = "Status: " + ensaio;
+    document.getElementById("horarioPublico").innerText = "Horário: " + horario;
+    document.getElementById("statusPublico2").innerText = "Status: " + ensaio;
+    document.getElementById("horarioPublico2").innerText = "Horário: " + horario;
+  });
+}
+
+/* ====== Inscrições ====== */
+const MEU_NUMERO_WA = "5577999996537";
+
+async function enviarInscricao(e){
   e.preventDefault();
-  if (!db) return alert("Firebase não configurado. Cole o firebaseConfig e publique.");
+  if(!db) return alert("Firebase não configurado. Cole o firebaseConfig e publique.");
 
   const nome = document.getElementById("nome").value.trim();
   const idade = Number(document.getElementById("idade").value);
@@ -280,12 +259,12 @@ async function enviarInscricao(e) {
   const funcao = document.getElementById("funcao").value;
 
   document.getElementById("msgInscricao").innerText = "Enviando...";
+
   await db.collection("inscricoes").add({
     nome, idade, telefone, escola, funcao,
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
 
-  // WhatsApp para você com o nome (e link que abre o login da diretoria)
   const linkDiretoria = (location.origin + location.pathname) + "#diretoria";
   const mensagem = `Olá, meu nome é ${nome}. Fiz minha inscrição para a Explosão Junina 2026 e aguardo mais informações. 🔥🌽\n\n(Diretoria: ${linkDiretoria})`;
   window.open("https://wa.me/" + MEU_NUMERO_WA + "?text=" + encodeURIComponent(mensagem), "_blank");
@@ -293,26 +272,23 @@ async function enviarInscricao(e) {
   document.getElementById("msgInscricao").innerText = "Inscrição enviada ✅";
   document.getElementById("formInscricao").reset();
 }
-
 document.getElementById("formInscricao").addEventListener("submit", enviarInscricao);
 
-/* =========================================================
-   7) Diretoria: tabela em tempo real + export por categoria
-   ========================================================= */
-let unsubscribeInscricoes = null;
+/* ====== Diretoria: lista ao vivo + download ====== */
 let cacheInscricoes = [];
+let unsubscribe = null;
 
-function iniciarRealtime() {
-  if (!db) return;
-  if (unsubscribeInscricoes) return;
+function iniciarRealtimeInscricoes(){
+  if(!db) return;
+  if(unsubscribe) return;
 
-  unsubscribeInscricoes = db.collection("inscricoes").orderBy("createdAt", "desc")
-    .onSnapshot((snap) => {
+  unsubscribe = db.collection("inscricoes").orderBy("createdAt","desc")
+    .onSnapshot((snap)=>{
       cacheInscricoes = [];
       const tbody = document.getElementById("lista");
       tbody.innerHTML = "";
 
-      snap.forEach((doc) => {
+      snap.forEach((doc)=>{
         const d = doc.data() || {};
         cacheInscricoes.push(d);
 
@@ -333,13 +309,12 @@ function iniciarRealtime() {
     });
 }
 
-function baixarCategorias() {
+function baixarCategorias(){
   const prod = [];
   const danc = [];
-
   (cacheInscricoes || []).forEach(i => {
-    if ((i.funcao || "") === "Produção") prod.push(i.nome || "");
-    if ((i.funcao || "") === "Dançarino(a)") danc.push(i.nome || "");
+    if((i.funcao || "") === "Produção") prod.push(i.nome || "");
+    if((i.funcao || "") === "Dançarino(a)") danc.push(i.nome || "");
   });
 
   const texto =
@@ -350,17 +325,15 @@ DANÇARINO:
 ${danc.filter(Boolean).join("\n")}
 `;
 
-  const blob = new Blob([texto], { type: "text/plain;charset=utf-8" });
+  const blob = new Blob([texto], { type:"text/plain;charset=utf-8" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = "inscricoes-explosao-junina.txt";
   a.click();
 }
 
-/* =========================================================
-   8) Utilitários
-   ========================================================= */
-function escapeHtml(str) {
+/* ====== Util ====== */
+function escapeHtml(str){
   return String(str)
     .replaceAll("&","&amp;")
     .replaceAll("<","&lt;")
@@ -369,16 +342,15 @@ function escapeHtml(str) {
     .replaceAll("'","&#039;");
 }
 
-/* =========================================================
-   9) Start
-   ========================================================= */
+/* ====== Start ====== */
 atualizarMensagemTopo();
-if (db) escutarConfigPublico();
+if(db) escutarConfigPublico();
+document.getElementById("btnSalvarConfig").addEventListener("click", salvarConfig);
 
-if (location.hash === "#diretoria") {
+if(location.hash === "#diretoria") {
   openLogin();
 }
-document.getElementById("btnSalvarConfig").addEventListener("click", salvarConfig);
 </script>
+
 </body>
 </html>
