@@ -32,7 +32,7 @@ th,td{padding:8px;border-bottom:1px solid #ddd;text-align:left}
 
 <nav>
 <button class="btn1" onclick="showSection('inicio')">Início</button>
-<button id="btnInscricao" class="btn2" onclick="showSection('inscricao')">Inscrição</button>
+<button class="btn2" onclick="showSection('inscricao')">Inscrição</button>
 <button class="btn1" onclick="showSection('avisos')">Avisos</button>
 <button class="btn2" onclick="showSection('ensaios')">Ensaios</button>
 <button onclick="openLogin()">Diretoria</button>
@@ -67,7 +67,7 @@ th,td{padding:8px;border-bottom:1px solid #ddd;text-align:left}
 <option>Dançarino(a)</option>
 <option>Produção</option>
 </select>
-<button class="btn1" type="submit" id="btnEnviar">Enviar</button>
+<button class="btn1" type="submit">Enviar</button>
 </form>
 </div>
 </div>
@@ -93,7 +93,7 @@ th,td{padding:8px;border-bottom:1px solid #ddd;text-align:left}
 <thead><tr><th>Nome</th><th>Idade</th><th>Telefone</th><th>Escola</th><th>Função</th></tr></thead>
 <tbody id="lista"></tbody>
 </table>
-<button id="btnDownload" class="btn2" style="display:none;margin-top:15px;" onclick="baixarCategorias()">Baixar lista por categoria</button>
+<button class="btn2" style="margin-top:15px;" onclick="baixarCategorias()">Baixar lista por categoria</button>
 </div>
 </div>
 
@@ -118,21 +118,12 @@ if(hoje<=fimDia9){document.getElementById("mensagemTopo").innerText='faça  já 
 else{document.getElementById("mensagemTopo").innerText='Seja bem vindo ao site oficial da explosão junina 🌽🔥';}
 }
 
-function controlarInscricao(){
-const hoje=new Date();
-const dia10=new Date(hoje.getFullYear(),2,10);
-if(hoje>=dia10){
-document.getElementById("btnInscricao").style.display="none";
-document.getElementById("btnEnviar").disabled=true;
-document.getElementById("btnEnviar").innerText="Inscrições Encerradas";
-}}
-
 function showSection(id){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');atualizarPublico();}
 
 function openLogin(){document.getElementById('loginBox').style.display='flex';}
 function closeLogin(){document.getElementById('loginBox').style.display='none';}
 
-function login(){if(loginUser.value===USER&&loginPass.value===PASS){closeLogin();showSection('diretoria');carregarDiretoria();carregarInscricoes();liberarDownload();}else{alert("Usuário ou senha incorretos.");}}
+function login(){if(loginUser.value===USER&&loginPass.value===PASS){closeLogin();showSection('diretoria');carregarDiretoria();carregarInscricoes();}else{alert("Usuário ou senha incorretos.");}}
 
 document.getElementById("formInscricao").addEventListener("submit",function(e){e.preventDefault();let inscritos=JSON.parse(localStorage.getItem("inscritos")||"[]");inscritos.push({nome:nome.value,idade:idade.value,telefone:telefone.value,escola:escola.value,funcao:funcao.value});localStorage.setItem("inscritos",JSON.stringify(inscritos));let mensagem=`Olá, meu nome é ${nome.value}. Fiz minha inscrição para a Explosão Junina 2026 e aguardo mais informações. 🔥🌽`;window.open("https://wa.me/5577999996537?text="+encodeURIComponent(mensagem),"_blank");this.reset();alert("Inscrição enviada!");});
 
@@ -144,12 +135,9 @@ function carregarDiretoria(){ensaioSelect.value=localStorage.getItem("ensaio")||
 
 function carregarInscricoes(){let inscritos=JSON.parse(localStorage.getItem("inscritos")||"[]");lista.innerHTML="";inscritos.forEach(i=>{lista.innerHTML+=`<tr><td>${i.nome}</td><td>${i.idade}</td><td>${i.telefone}</td><td>${i.escola}</td><td>${i.funcao}</td></tr>`;});}
 
-function liberarDownload(){let hoje=new Date();let dia10=new Date(hoje.getFullYear(),2,10);if(hoje>=dia10){document.getElementById("btnDownload").style.display="inline-block";}}
-
 function baixarCategorias(){let inscritos=JSON.parse(localStorage.getItem("inscritos")||"[]");let prod="PRODUÇÃO:\n";let danc="DANÇARINO(A):\n";inscritos.forEach(i=>{if(i.funcao==="Produção")prod+=i.nome+"\n";if(i.funcao==="Dançarino(a)")danc+=i.nome+"\n";});let texto=prod+"\n"+danc;let blob=new Blob([texto],{type:"text/plain"});let a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="inscricoes-explosao-junina.txt";a.click();}
 
 atualizarMensagem();
-controlarInscricao();
 atualizarPublico();
 </script>
 
