@@ -41,6 +41,7 @@ nav{
   justify-content:center;
   gap:10px;
   margin:15px 0;
+  flex-wrap:wrap;
 }
 
 button{
@@ -51,26 +52,12 @@ button{
   font-weight:bold;
 }
 
-.btn-primary{
-  background:var(--azul);
-  color:white;
-}
+.btn-primary{ background:var(--azul); color:white; }
+.btn-secondary{ background:var(--laranja); color:white; }
+.btn-danger{ background:#c62828; color:white; }
 
-.btn-secondary{
-  background:var(--laranja);
-  color:white;
-}
-
-.section{
-  display:none;
-  max-width:900px;
-  margin:auto;
-  padding:20px;
-}
-
-.section.active{
-  display:block;
-}
+.section{ display:none; max-width:1000px; margin:auto; padding:20px; }
+.section.active{ display:block; }
 
 .card{
   background:var(--card);
@@ -89,6 +76,9 @@ input,select,textarea{
   border:1px solid #ccc;
 }
 
+table{ width:100%; border-collapse:collapse; }
+th,td{ padding:8px; border-bottom:1px solid #ddd; text-align:left; }
+
 .login-box{
   position:fixed;
   inset:0;
@@ -104,17 +94,6 @@ input,select,textarea{
   border-radius:20px;
   width:90%;
   max-width:400px;
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-th,td{
-  padding:8px;
-  border-bottom:1px solid #ddd;
-  text-align:left;
 }
 
 </style>
@@ -137,7 +116,7 @@ th,td{
 <div id="inicio" class="section active">
 <div class="card">
 <h3>Status do Ensaio</h3>
-<p id="statusEnsaio">Não informado</p>
+<p id="statusEnsaio"></p>
 <p id="horarioEnsaio"></p>
 </div>
 </div>
@@ -173,7 +152,39 @@ th,td{
 <div id="avisos" class="section">
 <div class="card">
 <h3>Aviso Principal</h3>
-<p id="avisoPublico">Nenhum aviso ainda.</p>
+<p id="avisoPublico"></p>
+</div>
+</div>
+
+<!-- Página da Diretoria -->
+<div id="diretoria" class="section">
+<div class="card">
+<h3>Painel da Diretoria</h3>
+
+<label>Vai ter ensaio?</label>
+<select id="ensaioSelect">
+<option value="Sim">Sim</option>
+<option value="Não">Não</option>
+</select>
+
+<label>Horário do ensaio</label>
+<input id="horarioInput">
+
+<label>Aviso principal</label>
+<textarea id="avisoInput"></textarea>
+
+<button class="btn-primary" onclick="salvarConfig()">Salvar</button>
+<button class="btn-danger" onclick="logout()">Sair</button>
+</div>
+
+<div class="card">
+<h3>Inscritos</h3>
+<table>
+<thead>
+<tr><th>Nome</th><th>Idade</th><th>Telefone</th><th>Escola</th><th>Função</th></tr>
+</thead>
+<tbody id="listaInscritos"></tbody>
+</table>
 </div>
 </div>
 
@@ -195,20 +206,23 @@ const PASS="diretoria2026";
 function showSection(id){
 document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
 document.getElementById(id).classList.add('active');
+carregarPublico();
 }
 
 function openLogin(){document.getElementById('loginBox').style.display='flex';}
 function closeLogin(){document.getElementById('loginBox').style.display='none';}
 
 function login(){
-if(document.getElementById('loginUser').value===USER &&
-document.getElementById('loginPass').value===PASS){
-alert("Login realizado!");
+if(loginUser.value===USER && loginPass.value===PASS){
 closeLogin();
+showSection('diretoria');
+carregarDiretoria();
 } else {
 alert("Usuário ou senha incorretos.");
 }
 }
+
+function logout(){ showSection('inicio'); }
 
 function salvarInscricao(e){
 e.preventDefault();
@@ -223,7 +237,42 @@ funcao:funcao.value
 localStorage.setItem("inscritos",JSON.stringify(inscritos));
 alert("Inscrição enviada!");
 e.target.reset();
+carregarDiretoria();
 }
+
+function salvarConfig(){
+localStorage.setItem("ensaio",ensaioSelect.value);
+localStorage.setItem("horario",horarioInput.value);
+localStorage.setItem("aviso",avisoInput.value);
+alert("Configurações salvas!");
+carregarPublico();
+}
+
+function carregarPublico(){
+statusEnsaio.textContent="Ensaio: "+(localStorage.getItem("ensaio")||"Não definido");
+horarioEnsaio.textContent="Horário: "+(localStorage.getItem("horario")||"-");
+avisoPublico.textContent=localStorage.getItem("aviso")||"Nenhum aviso ainda.";
+}
+
+function carregarDiretoria(){
+ensaioSelect.value=localStorage.getItem("ensaio")||"Não";
+horarioInput.value=localStorage.getItem("horario")||"";
+avisoInput.value=localStorage.getItem("aviso")||"";
+
+let inscritos=JSON.parse(localStorage.getItem("inscritos")||"[]");
+listaInscritos.innerHTML="";
+inscritos.forEach(i=>{
+listaInscritos.innerHTML+=`<tr>
+<td>${i.nome}</td>
+<td>${i.idade}</td>
+<td>${i.telefone}</td>
+<td>${i.escola}</td>
+<td>${i.funcao}</td>
+</tr>`;
+});
+}
+
+carregarPublico();
 
 </script>
 
