@@ -6,96 +6,21 @@
 <title>Explosão Junina - Buritirama/BA</title>
 
 <style>
-:root{
-  --azul:#0b5bd3;
-  --laranja:#ff7a18;
-  --amarelo:#ffd23a;
-  --fundo:#fff8e8;
-  --card:#ffffff;
-  --texto:#1a1a1a;
-  --radius:18px;
-}
-
-body{
-  margin:0;
-  font-family: Arial, sans-serif;
-  background: var(--fundo);
-  color:var(--texto);
-}
-
-header{
-  background: linear-gradient(90deg,var(--laranja),var(--amarelo));
-  padding:15px;
-  color:#fff;
-  text-align:center;
-}
-
-header img{
-  width:70px;
-  display:block;
-  margin:0 auto 8px;
-}
-
-nav{
-  display:flex;
-  justify-content:center;
-  gap:10px;
-  margin:15px 0;
-  flex-wrap:wrap;
-}
-
-button{
-  padding:10px 16px;
-  border:none;
-  border-radius:20px;
-  cursor:pointer;
-  font-weight:bold;
-}
-
-.btn-primary{ background:var(--azul); color:white; }
-.btn-secondary{ background:var(--laranja); color:white; }
-.btn-danger{ background:#c62828; color:white; }
-
-.section{ display:none; max-width:1000px; margin:auto; padding:20px; }
-.section.active{ display:block; }
-
-.card{
-  background:var(--card);
-  padding:20px;
-  border-radius:var(--radius);
-  box-shadow:0 5px 20px rgba(0,0,0,0.08);
-  margin-bottom:20px;
-}
-
-input,select,textarea{
-  width:100%;
-  padding:10px;
-  margin-top:5px;
-  margin-bottom:15px;
-  border-radius:12px;
-  border:1px solid #ccc;
-}
-
-table{ width:100%; border-collapse:collapse; }
-th,td{ padding:8px; border-bottom:1px solid #ddd; text-align:left; }
-
-.login-box{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.4);
-  display:none;
-  justify-content:center;
-  align-items:center;
-}
-
-.login-content{
-  background:white;
-  padding:25px;
-  border-radius:20px;
-  width:90%;
-  max-width:400px;
-}
-
+body{margin:0;font-family:Arial;background:#fff8e8}
+header{background:linear-gradient(90deg,#ff7a18,#ffd23a);padding:15px;text-align:center;color:white}
+header img{width:70px;display:block;margin:0 auto 8px}
+nav{display:flex;justify-content:center;gap:10px;margin:15px 0;flex-wrap:wrap}
+button{padding:10px 16px;border:none;border-radius:20px;cursor:pointer;font-weight:bold}
+.btn1{background:#0b5bd3;color:white}
+.btn2{background:#ff7a18;color:white}
+.section{display:none;max-width:1000px;margin:auto;padding:20px}
+.section.active{display:block}
+.card{background:white;padding:20px;border-radius:18px;box-shadow:0 5px 20px rgba(0,0,0,0.08);margin-bottom:20px}
+input,select,textarea{width:100%;padding:10px;margin:5px 0 15px;border-radius:12px;border:1px solid #ccc}
+table{width:100%;border-collapse:collapse}
+th,td{padding:8px;border-bottom:1px solid #ddd;text-align:left}
+.login-box{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:none;justify-content:center;align-items:center}
+.login-content{background:white;padding:25px;border-radius:20px;width:90%;max-width:400px}
 </style>
 </head>
 <body>
@@ -107,16 +32,16 @@ th,td{ padding:8px; border-bottom:1px solid #ddd; text-align:left; }
 </header>
 
 <nav>
-<button class="btn-primary" onclick="showSection('inicio')">Início</button>
-<button class="btn-secondary" onclick="showSection('inscricao')">Inscrição</button>
-<button class="btn-primary" onclick="showSection('avisos')">Avisos</button>
+<button class="btn1" onclick="showSection('inicio')">Início</button>
+<button class="btn2" onclick="showSection('inscricao')">Inscrição</button>
+<button class="btn1" onclick="showSection('avisos')">Avisos</button>
 <button onclick="openLogin()">Diretoria</button>
 </nav>
 
 <div id="inicio" class="section active">
 <div class="card">
 <h3>Status do Ensaio</h3>
-<p id="statusEnsaio"></p>
+<p id="statusEnsaio">Não definido</p>
 <p id="horarioEnsaio"></p>
 </div>
 </div>
@@ -124,27 +49,17 @@ th,td{ padding:8px; border-bottom:1px solid #ddd; text-align:left; }
 <div id="inscricao" class="section">
 <div class="card">
 <h3>Inscrição</h3>
-<form onsubmit="salvarInscricao(event)">
-<label>Nome completo</label>
-<input required id="nome">
-
-<label>Idade</label>
-<input required id="idade" type="number">
-
-<label>Telefone</label>
-<input required id="telefone">
-
-<label>Escola</label>
-<input required id="escola">
-
-<label>Função</label>
+<form id="formInscricao">
+<input required id="nome" placeholder="Nome completo">
+<input required id="idade" type="number" placeholder="Idade">
+<input required id="telefone" placeholder="Telefone">
+<input required id="escola" placeholder="Escola">
 <select required id="funcao">
-<option value="">Selecione</option>
+<option value="">Selecione função</option>
 <option>Dançarino(a)</option>
 <option>Produção</option>
 </select>
-
-<button class="btn-primary" type="submit">Enviar</button>
+<button class="btn1" type="submit">Enviar</button>
 </form>
 </div>
 </div>
@@ -152,11 +67,10 @@ th,td{ padding:8px; border-bottom:1px solid #ddd; text-align:left; }
 <div id="avisos" class="section">
 <div class="card">
 <h3>Aviso Principal</h3>
-<p id="avisoPublico"></p>
+<p id="avisoPublico">Nenhum aviso ainda.</p>
 </div>
 </div>
 
-<!-- Página da Diretoria -->
 <div id="diretoria" class="section">
 <div class="card">
 <h3>Painel da Diretoria</h3>
@@ -173,16 +87,14 @@ th,td{ padding:8px; border-bottom:1px solid #ddd; text-align:left; }
 <label>Aviso principal</label>
 <textarea id="avisoInput"></textarea>
 
-<button class="btn-primary" onclick="salvarConfig()">Salvar</button>
-<button class="btn-danger" onclick="logout()">Sair</button>
+<button class="btn1" onclick="salvarConfig()">Salvar Configurações</button>
+<button onclick="logout()">Sair</button>
 </div>
 
 <div class="card">
 <h3>Inscritos</h3>
 <table>
-<thead>
-<tr><th>Nome</th><th>Idade</th><th>Telefone</th><th>Escola</th><th>Função</th></tr>
-</thead>
+<thead><tr><th>Nome</th><th>Idade</th><th>Telefone</th><th>Escola</th><th>Função</th></tr></thead>
 <tbody id="listaInscritos"></tbody>
 </table>
 </div>
@@ -191,9 +103,9 @@ th,td{ padding:8px; border-bottom:1px solid #ddd; text-align:left; }
 <div class="login-box" id="loginBox">
 <div class="login-content">
 <h3>Login da Diretoria</h3>
-<input placeholder="Usuário" id="loginUser">
-<input type="password" placeholder="Senha" id="loginPass">
-<button class="btn-primary" onclick="login()">Entrar</button>
+<input id="loginUser" placeholder="Usuário">
+<input type="password" id="loginPass" placeholder="Senha">
+<button class="btn1" onclick="login()">Entrar</button>
 <button onclick="closeLogin()">Fechar</button>
 </div>
 </div>
@@ -222,9 +134,11 @@ alert("Usuário ou senha incorretos.");
 }
 }
 
-function logout(){ showSection('inicio'); }
+function logout(){
+showSection('inicio');
+}
 
-function salvarInscricao(e){
+document.getElementById("formInscricao").addEventListener("submit", function(e){
 e.preventDefault();
 let inscritos=JSON.parse(localStorage.getItem("inscritos")||"[]");
 inscritos.push({
@@ -236,9 +150,9 @@ funcao:funcao.value
 });
 localStorage.setItem("inscritos",JSON.stringify(inscritos));
 alert("Inscrição enviada!");
-e.target.reset();
+this.reset();
 carregarDiretoria();
-}
+});
 
 function salvarConfig(){
 localStorage.setItem("ensaio",ensaioSelect.value);
